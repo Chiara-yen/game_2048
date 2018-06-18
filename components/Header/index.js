@@ -5,7 +5,9 @@ export default class Header extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Header</Text>
+        <Text>Step:</Text>
+        <Text>Score:</Text>
+        <Text>Crown:</Text>
       </View>
     );
   }
@@ -13,9 +15,10 @@ export default class Header extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    flex: 2,
+    backgroundColor: 'yellowgreen',
+    alignItems: 'flex-start',
     justifyContent: 'center',
+    width: '100%',
   },
 });

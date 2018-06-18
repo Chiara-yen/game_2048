@@ -13,9 +13,10 @@ export default class Playground extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    flex: 6,
+    backgroundColor: '#ff0',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
   },
 });

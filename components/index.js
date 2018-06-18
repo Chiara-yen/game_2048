@@ -1,9 +1,3 @@
-import Header from './Header/index';
-import Playground from './Playground/index';
-import Footer from './Footer/index';
-
-export default {
-  Header,
-  Playground,
-  Footer,
-};
+export Header from './Header/index';
+export Playground from './Playground/index';
+export Footer from './Footer/index';

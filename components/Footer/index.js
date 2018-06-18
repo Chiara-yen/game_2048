@@ -5,7 +5,7 @@ export default class Footer extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Footer</Text>
+        <Text>Redo</Text>
       </View>
     );
   }
