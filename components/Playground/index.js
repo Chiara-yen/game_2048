@@ -41,8 +41,37 @@ export default class Playground extends React.Component {
         }
 
         console.log(`%c ${direction} `, 'color:white;background:orange;');
+
+        if (direction === 'Left') this.setHorizontal(false);
+        if (direction === 'Right') this.setHorizontal(true);
       },
     });
+  }
+
+  setHorizontal(isRight) {
+    const rows = chunk(this.state.array, 4);
+    const newArray = [];
+    rows.forEach((row, i) => {
+      if (row.every(it => it === 0)) {
+        newArray[i] = row;
+      } else {
+        const newRow = [];
+        row.map((it, i, array) => {
+          console.log(i, it, array);
+          if (!it) return;
+          if (array[i + 1] === array[i]) {
+            newRow.push(it + 1);
+          } else {
+            newRow.push(it);
+          }
+        });
+        newRow.length = 4;
+        if (isRight) newRow.reverse();
+        newArray[i] = newRow;
+      }
+    });
+    console.log('newArray reduce =>', newArray.reduce((pre, curr) => pre.concat(curr), []));
+    this.setState({ array: newArray.reduce((pre, curr) => pre.concat(curr), []) });
   }
 
   render() {
