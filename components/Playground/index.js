@@ -9,13 +9,12 @@ export default class Playground extends React.Component {
   constructor(props) {
     super(props);
     this.array = Array(16).fill(0);
-    const firstIndex = getRandomNumber(15);
-    let secondIndex = getRandomNumber(15);
-    while (secondIndex === firstIndex) {
-      secondIndex = getRandomNumber(15);
-    }
-    this.array[firstIndex] = 2;
-    this.array[secondIndex] = 2;
+
+    const a = Array(16).fill(1).map((it, index) => index);
+    const firstIndex = a.splice(getRandomNumber(15), 1)[0];
+    const secondIndex = a.splice(getRandomNumber(14), 1)[0];
+    this.array[firstIndex] = 1;
+    this.array[secondIndex] = 1;
   }
 
   render() {

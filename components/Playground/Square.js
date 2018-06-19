@@ -5,7 +5,7 @@ import { Badge } from 'react-native-elements';
 
 const getColor = (value) => {
   switch (value) {
-    case 2:
+    case 1:
       return 'yellowgreen';
     default:
       return 'lightcyan';
@@ -25,7 +25,7 @@ const Square = (key, value) => (
       marginRight: 5,
     }}
   >
-    <Text>{value === 0 ? '' : value}</Text>
+    <Text>{value === 0 ? '' : Math.pow(2, value)}</Text>
   </Badge>
 );
 
