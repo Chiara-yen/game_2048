@@ -17,15 +17,15 @@ const Square = (key, value) => (
     key={key}
     containerStyle={{
       backgroundColor: getColor(value),
-      width: 80,
-      height: 80,
+      width: 70,
+      height: 70,
       marginTop: 5,
       marginBottom: 5,
       marginLeft: 5,
       marginRight: 5,
     }}
   >
-    <Text>{value === 0 ? '' : Math.pow(2, value)}</Text>
+    {!value || value === 0 ? null : <Text>{Math.pow(2, value)}</Text>}
   </Badge>
 );
 
