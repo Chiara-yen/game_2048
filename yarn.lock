@@ -4348,6 +4348,10 @@ lodash.times@^4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/lodash.times/-/lodash.times-4.3.2.tgz#3e1f2565c431754d54ab57f2ed1741939285ca1d"
 
+lodash.unzip@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/lodash.unzip/-/lodash.unzip-3.4.0.tgz#99523e589832e0b4e1e8002462cd3c4501ba909f"
+
 lodash.zip@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/lodash.zip/-/lodash.zip-4.2.0.tgz#ec6662e4896408ed4ab6c542a3990b72cc080020"
