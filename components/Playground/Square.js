@@ -2,21 +2,24 @@ import React from 'react';
 import { Text } from 'react-native';
 import { Badge } from 'react-native-elements';
 
-
-const getColor = (value) => {
-  switch (value) {
-    case 1:
-      return 'yellowgreen';
-    default:
-      return 'lightcyan';
-  }
-};
+const colors = [
+  'yellowgreen',
+  'cornflowerblue',
+  'coral',
+  'yellow',
+  'pink',
+  'teal',
+  'purple',
+  'steelblue',
+  'tomato',
+  'deeppink',
+];
 
 const Square = (key, value) => (
   <Badge
     key={key}
     containerStyle={{
-      backgroundColor: getColor(value),
+      backgroundColor: value ? colors[value % 10] : 'lightcyan',
       width: 70,
       height: 70,
       marginTop: 5,

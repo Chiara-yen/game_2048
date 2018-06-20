@@ -1,17 +1,57 @@
 import React from 'react';
 import { StyleSheet, PanResponder, View } from 'react-native';
 import chunk from 'lodash.chunk';
+import zip from 'lodash.zip';
+import unzip from 'lodash.unzip';
 import Square from './Square';
 
-const getRandomNumber = boundary => Math.round(Math.random() * boundary);
+const getRandomNumber = boundary => Math.floor(Math.random() * boundary);
+const getNextStepArray = array => {
+  const rtn = Array.from(array);
+  const temp = array.map((value, index) => (value === 0 ? index : -1)).filter(value => value !== -1);
+  // console.log('temp =>', temp);
+  const firstIndex = temp.splice(getRandomNumber(temp.length), 1)[0];
+  // console.log('firstIndex | temp =>', firstIndex, temp);
+  const secondIndex = temp.splice(getRandomNumber(temp.length), 1)[0];
+  // console.log('secondIndex | temp =>', secondIndex, temp);
+  // console.log('%c firstIndex | secondIndex =>', `color:${!firstIndex || !secondIndex ? 'red' : 'black'}`, firstIndex, secondIndex);
+  rtn[firstIndex] = 1;
+  rtn[secondIndex] = 1;
+  // console.log('getNextStepArray return =>', rtn);
+  return rtn;
+};
 const getInitArray = () => {
   const array = Array(16).fill(0);
-  const temp = Array(16).fill(1).map((it, index) => index);
-  const firstIndex = temp.splice(getRandomNumber(15), 1)[0];
-  const secondIndex = temp.splice(getRandomNumber(14), 1)[0];
-  array[firstIndex] = 1;
-  array[secondIndex] = 1;
-  return array;
+  return getNextStepArray(array);
+};
+const util = (group) => {
+  let array = [];
+  let iter = (group.filter(v => v))[Symbol.iterator]();
+  let done = false;
+  let previous;
+
+  while (!done) {
+    const next = iter.next();
+    const previousValue = previous;
+    const value = next.value;
+    done = next.done;
+
+    if (!done) previous = next.value;
+    // console.log('next =>', next);
+
+    if (previousValue && previousValue === value) {
+      // console.log('%c push =>', 'color:tomato', previousValue + 1);
+      array.push(previousValue + 1);
+      previous = 0;
+    } else if (previousValue) {
+      // console.log('%c push =>', 'color:teal', previousValue);
+      array.push(previousValue);
+    }
+  }
+  console.log('array => ', array);
+  const rtn = [...array, ...Array(4).fill(0)].slice(0, 4)
+  console.log('rtn => ', rtn);
+  return rtn;
 };
 
 export default class Playground extends React.Component {
@@ -44,6 +84,8 @@ export default class Playground extends React.Component {
 
         if (direction === 'Left') this.setHorizontal(false);
         if (direction === 'Right') this.setHorizontal(true);
+        if (direction === 'Top') this.setVertical(false);
+        if (direction === 'Down') this.setVertical(true);
       },
     });
   }
@@ -55,23 +97,34 @@ export default class Playground extends React.Component {
       if (row.every(it => it === 0)) {
         newArray[i] = row;
       } else {
-        const newRow = [];
-        row.map((it, i, array) => {
-          console.log(i, it, array);
-          if (!it) return;
-          if (array[i + 1] === array[i]) {
-            newRow.push(it + 1);
-          } else {
-            newRow.push(it);
-          }
-        });
-        newRow.length = 4;
-        if (isRight) newRow.reverse();
+        const newRow = util(row);
+        if (isRight) newRow.reverse(); // FIXME: bug
         newArray[i] = newRow;
       }
     });
-    console.log('newArray reduce =>', newArray.reduce((pre, curr) => pre.concat(curr), []));
-    this.setState({ array: newArray.reduce((pre, curr) => pre.concat(curr), []) });
+    console.log('newArray =>', newArray);
+    const array = newArray.reduce((pre, curr) => pre.concat(curr), []);
+
+    this.setState({ array: getNextStepArray(array) });
+  }
+
+  setVertical(isDown) {
+    const rows = chunk(this.state.array, 4);
+    const columns = zip(...rows);
+    const newArray = [];
+    columns.forEach((column, i) => {
+      if (column.every(it => it === 0)) {
+        newArray[i] = column;
+      } else {
+        const newColumn = util(column);
+        if (isDown) newColumn.reverse(); // FIXME: bug
+        newArray[i] = newColumn;
+      }
+    });
+    console.log('unzip(newArray) =>', unzip(newArray));
+    const array = unzip(newArray).reduce((pre, curr) => pre.concat(curr), []);
+
+    this.setState({ array: getNextStepArray(array) });
   }
 
   render() {
