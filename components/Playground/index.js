@@ -48,10 +48,7 @@ const util = (group) => {
       array.push(previousValue);
     }
   }
-  console.log('array => ', array);
-  const rtn = [...array, ...Array(4).fill(0)].slice(0, 4)
-  console.log('rtn => ', rtn);
-  return rtn;
+  return array;
 };
 
 export default class Playground extends React.Component {
@@ -97,12 +94,17 @@ export default class Playground extends React.Component {
       if (row.every(it => it === 0)) {
         newArray[i] = row;
       } else {
-        const newRow = util(row);
-        if (isRight) newRow.reverse(); // FIXME: bug
+        let newRow = util(row);
+        if (isRight) {
+          newRow = [...Array(4).fill(0), ...newRow].slice(-4);
+        } else {
+          newRow = [...newRow, ...Array(4).fill(0)].slice(0, 4);
+        }
+        console.log(`setHorizontal ${isRight ? 'Right' : 'Left'} => `, newRow);
         newArray[i] = newRow;
       }
     });
-    console.log('newArray =>', newArray);
+    // console.log('newArray =>', newArray);
     const array = newArray.reduce((pre, curr) => pre.concat(curr), []);
 
     this.setState({ array: getNextStepArray(array) });
@@ -116,12 +118,17 @@ export default class Playground extends React.Component {
       if (column.every(it => it === 0)) {
         newArray[i] = column;
       } else {
-        const newColumn = util(column);
-        if (isDown) newColumn.reverse(); // FIXME: bug
+        let newColumn = util(column);
+        if (isDown) {
+          newColumn = [...Array(4).fill(0), ...newColumn].slice(-4);
+        } else {
+          newColumn = [...newColumn, ...Array(4).fill(0)].slice(0, 4);
+        }
+        console.log(`setVertical ${isDown ? 'Right' : 'Left'} => `, newColumn);
         newArray[i] = newColumn;
       }
     });
-    console.log('unzip(newArray) =>', unzip(newArray));
+    // console.log('unzip(newArray) =>', unzip(newArray));
     const array = unzip(newArray).reduce((pre, curr) => pre.concat(curr), []);
 
     this.setState({ array: getNextStepArray(array) });
