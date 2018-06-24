@@ -62,7 +62,7 @@ class Playground extends React.Component {
     const rows = chunk(this.state.array, 4);
     const newRows = calcChunckedArray(rows, isRight);
     const array = newRows.reduce((pre, curr) => pre.concat(curr), []);
-    this.setState({ array: getNextStepArray(array) }, this.nextStep);
+    this.checkIsGameOverOrNextStep(array);
   }
 
   setVertical = (isDown) => {
@@ -70,7 +70,15 @@ class Playground extends React.Component {
     const columns = zip(...rows);
     const newColumns = calcChunckedArray(columns, isDown);
     const array = unzip(newColumns).reduce((pre, curr) => pre.concat(curr), []);
-    this.setState({ array: getNextStepArray(array) }, this.nextStep);
+    this.checkIsGameOverOrNextStep(array);
+  }
+
+  checkIsGameOverOrNextStep = (array) => {
+    if (array.join('') === this.state.array.join('')) {
+      this.props.gameOver();
+    } else {
+      this.setState({ array: getNextStepArray(array) }, this.nextStep);
+    }
   }
 
   render() {
