@@ -6,25 +6,20 @@ import unzip from 'lodash.unzip';
 import Square from './Square';
 
 const getRandomNumber = boundary => Math.floor(Math.random() * boundary);
-const getNextStepArray = array => {
+const getNextStepArray = (array, createCount = 1) => {
   const rtn = Array.from(array);
   const temp = array.map((value, index) => (value === 0 ? index : -1)).filter(value => value !== -1);
-  // console.log('temp =>', temp);
-  const firstIndex = temp.splice(getRandomNumber(temp.length), 1)[0];
-  // console.log('firstIndex | temp =>', firstIndex, temp);
-  const secondIndex = temp.splice(getRandomNumber(temp.length), 1)[0];
-  // console.log('secondIndex | temp =>', secondIndex, temp);
-  // console.log('%c firstIndex | secondIndex =>', `color:${!firstIndex || !secondIndex ? 'red' : 'black'}`, firstIndex, secondIndex);
-  rtn[firstIndex] = 1;
-  rtn[secondIndex] = 1;
-  // console.log('getNextStepArray return =>', rtn);
+  for (let i = 0; i < createCount; i++) {
+    const index = temp.splice(getRandomNumber(temp.length), 1)[0];
+    rtn[index] = 1;
+  }
   return rtn;
 };
 const getInitArray = () => {
   const array = Array(16).fill(0);
-  return getNextStepArray(array);
+  return getNextStepArray(array, 2);
 };
-const util = (group) => {
+const mergeSquare = (group) => {
   let array = [];
   let iter = (group.filter(v => v))[Symbol.iterator]();
   let done = false;
@@ -94,7 +89,7 @@ export default class Playground extends React.Component {
       if (row.every(it => it === 0)) {
         newArray[i] = row;
       } else {
-        let newRow = util(row);
+        let newRow = mergeSquare(row);
         if (isRight) {
           newRow = [...Array(4).fill(0), ...newRow].slice(-4);
         } else {
@@ -118,7 +113,7 @@ export default class Playground extends React.Component {
       if (column.every(it => it === 0)) {
         newArray[i] = column;
       } else {
-        let newColumn = util(column);
+        let newColumn = mergeSquare(column);
         if (isDown) {
           newColumn = [...Array(4).fill(0), ...newColumn].slice(-4);
         } else {
