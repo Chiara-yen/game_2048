@@ -25,6 +25,7 @@
     "lodash.zip": "^4.2.0",
     "react": "16.3.1",
     "react-native": "~0.55.2",
-    "react-native-elements": "^0.19.1"
+    "react-native-elements": "^0.19.1",
+    "redux": "^4.0.0"
   }
 }
