@@ -3,16 +3,16 @@ import { Text } from 'react-native';
 import { Badge } from 'react-native-elements';
 
 const colors = [
-  'yellowgreen',
+  'rebeccapurple',
   'cornflowerblue',
   'coral',
-  'yellow',
+  'gold',
   'pink',
   'teal',
   'purple',
-  'steelblue',
-  'tomato',
-  'deeppink',
+  'turquoise',
+  'yellowgreen',
+  'palevioletred',
 ];
 
 const Square = (key, value) => (

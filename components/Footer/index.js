@@ -1,23 +1,30 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button } from 'react-native-elements';
 
-export default class Footer extends React.Component {
+class Footer extends React.Component {
   render() {
+    const { step } = this.props;
     return (
       <View style={styles.container}>
-        <Text>Step: 0</Text>
+        <Text>Step: {step}</Text>
         <Button
-          title='Redo'
+          title='Undo'
           icon={{name: 'refresh', type: 'foundation'}}
           borderRadius={5}
           disabled
-          onPress={() => console.log('%c Clicked Redo!', 'color:tomato;font-weight:bold;')}
+          onPress={() => console.log('%c Clicked Undo!', 'color:tomato;font-weight:bold;')}
         />
       </View>
     );
   }
 }
+
+const mapStateToProps = ({ step }) => ({ step });
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Footer);
 
 const styles = StyleSheet.create({
   container: {

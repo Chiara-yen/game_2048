@@ -1,52 +1,15 @@
 import React from 'react';
-import { StyleSheet, PanResponder, View } from 'react-native';
+import { connect } from 'react-redux';
+import { StyleSheet, PanResponder, Text, View } from 'react-native';
+import { Button, Icon } from 'react-native-elements';
 import chunk from 'lodash.chunk';
 import zip from 'lodash.zip';
 import unzip from 'lodash.unzip';
 import Square from './Square';
+import { getInitArray, getNextStepArray, getScore, calcChunckedArray } from './helper';
+import { gameStart, gameOver, setScore, addCrown, addStep } from '../../ducks';
 
-const getRandomNumber = boundary => Math.floor(Math.random() * boundary);
-const getNextStepArray = (array, createCount = 1) => {
-  const rtn = Array.from(array);
-  const temp = array.map((value, index) => (value === 0 ? index : -1)).filter(value => value !== -1);
-  for (let i = 0; i < createCount; i++) {
-    const index = temp.splice(getRandomNumber(temp.length), 1)[0];
-    rtn[index] = 1;
-  }
-  return rtn;
-};
-const getInitArray = () => {
-  const array = Array(16).fill(0);
-  return getNextStepArray(array, 2);
-};
-const mergeSquare = (group) => {
-  let array = [];
-  let iter = (group.filter(v => v))[Symbol.iterator]();
-  let done = false;
-  let previous;
-
-  while (!done) {
-    const next = iter.next();
-    const previousValue = previous;
-    const value = next.value;
-    done = next.done;
-
-    if (!done) previous = next.value;
-    // console.log('next =>', next);
-
-    if (previousValue && previousValue === value) {
-      // console.log('%c push =>', 'color:tomato', previousValue + 1);
-      array.push(previousValue + 1);
-      previous = 0;
-    } else if (previousValue) {
-      // console.log('%c push =>', 'color:teal', previousValue);
-      array.push(previousValue);
-    }
-  }
-  return array;
-};
-
-export default class Playground extends React.Component {
+class Playground extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -82,55 +45,53 @@ export default class Playground extends React.Component {
     });
   }
 
-  setHorizontal(isRight) {
-    const rows = chunk(this.state.array, 4);
-    const newArray = [];
-    rows.forEach((row, i) => {
-      if (row.every(it => it === 0)) {
-        newArray[i] = row;
-      } else {
-        let newRow = mergeSquare(row);
-        if (isRight) {
-          newRow = [...Array(4).fill(0), ...newRow].slice(-4);
-        } else {
-          newRow = [...newRow, ...Array(4).fill(0)].slice(0, 4);
-        }
-        console.log(`setHorizontal ${isRight ? 'Right' : 'Left'} => `, newRow);
-        newArray[i] = newRow;
-      }
-    });
-    // console.log('newArray =>', newArray);
-    const array = newArray.reduce((pre, curr) => pre.concat(curr), []);
-
-    this.setState({ array: getNextStepArray(array) });
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isGameOver && !this.props.isGameOver) {
+      this.setState({ array: getInitArray() });
+    }
   }
 
-  setVertical(isDown) {
+  nextStep = () => {
+    const { setScore, addStep } = this.props;
+    const score = getScore(this.state.array);
+    setScore(score);
+    addStep();
+  }
+
+  setHorizontal = (isRight) => {
+    const rows = chunk(this.state.array, 4);
+    const newRows = calcChunckedArray(rows, isRight);
+    const array = newRows.reduce((pre, curr) => pre.concat(curr), []);
+    this.setState({ array: getNextStepArray(array) }, this.nextStep);
+  }
+
+  setVertical = (isDown) => {
     const rows = chunk(this.state.array, 4);
     const columns = zip(...rows);
-    const newArray = [];
-    columns.forEach((column, i) => {
-      if (column.every(it => it === 0)) {
-        newArray[i] = column;
-      } else {
-        let newColumn = mergeSquare(column);
-        if (isDown) {
-          newColumn = [...Array(4).fill(0), ...newColumn].slice(-4);
-        } else {
-          newColumn = [...newColumn, ...Array(4).fill(0)].slice(0, 4);
-        }
-        console.log(`setVertical ${isDown ? 'Right' : 'Left'} => `, newColumn);
-        newArray[i] = newColumn;
-      }
-    });
-    // console.log('unzip(newArray) =>', unzip(newArray));
-    const array = unzip(newArray).reduce((pre, curr) => pre.concat(curr), []);
-
-    this.setState({ array: getNextStepArray(array) });
+    const newColumns = calcChunckedArray(columns, isDown);
+    const array = unzip(newColumns).reduce((pre, curr) => pre.concat(curr), []);
+    this.setState({ array: getNextStepArray(array) }, this.nextStep);
   }
 
   render() {
+    const { isGameOver, gameStart } = this.props;
     const rows = chunk(this.state.array, 4);
+
+    if (isGameOver) {
+      return (
+        <View style={styles.container}>
+          <Icon name='skull' type='foundation' size={150}/>
+          <Text style={styles.gameOverText}>Game Over!</Text>
+          <Button
+            title='Start Again'
+            borderRadius={5}
+            buttonStyle={styles.startAgainButton}
+            onPress={gameStart}
+          />
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container} {...this.panResponder.panHandlers}>
         {rows.map((row, index) =>
@@ -142,6 +103,11 @@ export default class Playground extends React.Component {
     );
   }
 }
+
+const mapStateToProps = ({ isGameOver }) => ({ isGameOver });
+const mapDispatchToProps = { gameStart, gameOver, setScore, addCrown, addStep };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Playground);
 
 const styles = StyleSheet.create({
   container: {
@@ -155,5 +121,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  gameOverText: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  startAgainButton: {
+    backgroundColor: 'tomato',
+    width: '100%',
   }
 });
