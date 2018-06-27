@@ -35,7 +35,7 @@ class Playground extends React.Component {
           direction = v >= 0 ? 'Top' : 'Down';
         }
 
-        console.log(`%c ${direction} `, 'color:white;background:orange;');
+        // console.log(`%c ${direction} `, 'color:white;background:orange;');
 
         if (direction === 'Left') this.setHorizontal(false);
         if (direction === 'Right') this.setHorizontal(true);
@@ -74,7 +74,9 @@ class Playground extends React.Component {
   }
 
   checkIsGameOverOrNextStep = (array) => {
-    if (array.join('') === this.state.array.join('')) {
+    const isSame = array.join('') === this.state.array.join('');
+    const isNoMoreZoom = array.every(it => it);
+    if (isNoMoreZoom && isSame) {
       this.props.gameOver();
     } else {
       this.setState({ array: getNextStepArray(array) }, this.nextStep);
